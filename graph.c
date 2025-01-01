@@ -54,7 +54,7 @@ typedef struct AdjacentList {
 //* Graph use Adjacent List
 typedef struct Graph {
     int V;
-    struct AdjacentList* array;
+    AdjacentList* array;
 } Graph;
 
 //? Create Adjacenct list Node
@@ -78,13 +78,17 @@ Graph* create_list_graph(int V) {
 
 //? Add Edge to Graph
 void add_edge_list(Graph* graph, int src, char name_src, int dest, char name_dest) {
-    AdjacentListNode* newNode = create_node(dest, name_dest);
-    newNode->next = graph->array[src].head;
-    graph->array[src].head = newNode;
-
-    newNode = create_node(src, name_src);
-    newNode->next = graph->array[dest].head;
-    graph->array[dest].head = newNode;
+    AdjacentListNode* node = create_node(dest, name_dest);
+    if (graph->array[src].head == NULL) {
+        graph->array[src].head = node;
+    } 
+    else {
+        AdjacentListNode* temp = graph->array[src].head;
+        while (temp->next != NULL) {
+            temp = temp->next;
+        }
+        temp->next = node;
+    }
 }
 
 //* BFS
@@ -143,17 +147,21 @@ void DFS(Graph* graph, int startVertex) {
 }
 
 int main() {
-    int V = 5;
+    int V = 7;
 
     //? Adjacent Matrix
     int** matrix_graph = create_matrix_graph(V);
-    add_edge_matrix(matrix_graph, 0, 1);
-    add_edge_matrix(matrix_graph, 0, 4);
-    add_edge_matrix(matrix_graph, 1, 2);
-    add_edge_matrix(matrix_graph, 1, 3);
-    add_edge_matrix(matrix_graph, 1, 4);
-    add_edge_matrix(matrix_graph, 2, 3);
-    add_edge_matrix(matrix_graph, 3, 4);
+    add_edge_matrix(matrix_graph, 0, 1); 
+    add_edge_matrix(matrix_graph, 0, 2); 
+    add_edge_matrix(matrix_graph, 0, 3); 
+    add_edge_matrix(matrix_graph, 1, 4); 
+    add_edge_matrix(matrix_graph, 3, 4); 
+    add_edge_matrix(matrix_graph, 3, 5); 
+    add_edge_matrix(matrix_graph, 4, 2);
+    add_edge_matrix(matrix_graph, 4, 6); 
+    add_edge_matrix(matrix_graph, 4, 5); 
+    add_edge_matrix(matrix_graph, 6, 1); 
+    add_edge_matrix(matrix_graph, 6, 5); 
 
     printf("Adjacency Matrix of the graph:\n");
     print_matrix_graph(matrix_graph, V);
@@ -161,20 +169,24 @@ int main() {
     dispose_graph_matrix(matrix_graph, V);
 
     //? Adjacent List
-    Graph* graph = create_list_graph(V);
-    add_edge_list(graph, 0, 'a', 1, 'b');
-    add_edge_list(graph, 1, 'b', 4, 'e');
-    add_edge_list(graph, 2, 'c', 6, '0');
-    add_edge_list(graph, 3, 'd', 4, 'e');
-    add_edge_list(graph, 4, 'e', 2, 'c');
-    add_edge_list(graph, 5, 'g', 1, 'b');
-    add_edge_list(graph, 6, 'f', 7, '0');
+    Graph* list_graph = create_list_graph(V);
+    add_edge_list(list_graph, 0, 'a', 1, 'b'); 
+    add_edge_list(list_graph, 0, 'a', 2, 'c'); 
+    add_edge_list(list_graph, 0, 'a', 3, 'd'); 
+    add_edge_list(list_graph, 1, 'b', 4, 'e'); 
+    add_edge_list(list_graph, 3, 'd', 4, 'e'); 
+    add_edge_list(list_graph, 3, 'd', 5, 'f'); 
+    add_edge_list(list_graph, 4, 'e', 2, 'c'); 
+    add_edge_list(list_graph, 4, 'e', 6, 'g'); 
+    add_edge_list(list_graph, 4, 'e', 5, 'f'); 
+    add_edge_list(list_graph, 6, 'g', 1, 'b'); 
+    add_edge_list(list_graph, 6, 'g', 5, 'f'); 
 
     printf("\nBFS Perform:\n");
-    BFS(graph, 0);
+    BFS(list_graph, 0);
 
     printf("\nDFS Perform:\n");
-    DFS(graph, 0);
+    DFS(list_graph, 0);
 
     return 0;
 }
